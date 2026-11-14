@@ -1,0 +1,754 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Life OS">
+<meta name="theme-color" content="#090b12">
+<title>Life OS 2.0</title>
+
+<style>
+:root{
+ --bg:#090b12;--panel:#121622;--panel2:#191f2d;--panel3:#242c3c;
+ --text:#f5f6fc;--muted:#8791a6;--purple:#a78bfa;--purple2:#8064e9;
+ --green:#55d6a1;--red:#ff788b;--yellow:#f4c779;--blue:#7dbbff;
+ --border:rgba(255,255,255,.075);--radius:20px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:radial-gradient(ellipse at 80% -15%,#6f55bd24,transparent 42%),var(--bg);
+ color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+ padding:env(safe-area-inset-top) 15px calc(95px + env(safe-area-inset-bottom));
+ -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--purple);outline-offset:3px}
+.app{max-width:570px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 2px 24px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{
+ width:41px;height:41px;border-radius:14px;display:grid;place-items:center;
+ background:linear-gradient(145deg,#c5b0ff,#8064e9);color:#171225;
+ font-size:23px;font-weight:900;box-shadow:0 6px 25px #9876ef38
+}
+.brandname{font-size:20px;font-weight:850;letter-spacing:-.8px}
+.brandsub{font-size:9px;letter-spacing:1.4px;color:var(--muted);margin-top:3px}
+.date{text-align:right;font-size:11px;color:var(--muted);line-height:1.6}
+.section{display:none;animation:fade .2s ease}
+.section.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.heading{margin:4px 0 19px}
+.heading h1{font-size:28px;letter-spacing:-1.1px;margin:0 0 5px}
+.heading p{font-size:12px;color:var(--muted);margin:0}
+.card{
+ background:linear-gradient(145deg,#ffffff08,#ffffff02),var(--panel);
+ border:1px solid var(--border);border-radius:var(--radius);
+ padding:17px;margin-bottom:13px;
+}
+.cardhead{display:flex;justify-content:space-between;align-items:center;gap:9px;margin-bottom:14px}
+.cardtitle{font-size:14px;font-weight:750}
+.eyebrow{font-size:9px;color:var(--muted);letter-spacing:1.3px;text-transform:uppercase}
+.muted{color:var(--muted)}
+.hero{
+ background:radial-gradient(circle at 85% 0%,#9a7bfa40,transparent 42%),linear-gradient(145deg,#27213f,#171a27);
+ overflow:hidden;
+}
+.hero-top{display:flex;justify-content:space-between;align-items:center}
+.pill{font-size:10px;padding:6px 9px;border-radius:30px;background:#a78bfa22;color:#cbbaff}
+.timerarea{text-align:center;padding:25px 0 17px}
+.timer{font-size:clamp(58px,16vw,72px);font-weight:850;letter-spacing:-3px;font-variant-numeric:tabular-nums}
+.timercaption{font-size:11px;color:#c3badc;margin-top:6px}
+.actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.btn{
+ border:1px solid var(--border);background:var(--panel2);color:var(--text);
+ padding:11px 14px;border-radius:12px;font-size:12px;font-weight:700;
+ transition:transform .15s,opacity .15s
+}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:linear-gradient(135deg,#c1aaff,#896feb);color:#171322;border:0}
+.btn.danger{color:var(--red)}
+.btn.ghost{background:transparent}
+.btn.small{padding:7px 10px;font-size:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{background:var(--panel);border:1px solid var(--border);border-radius:17px;padding:15px}
+.metricicon{font-size:18px;margin-bottom:9px}
+.metricvalue{font-size:24px;font-weight:850;letter-spacing:-.8px}
+.metriclabel{font-size:10px;color:var(--muted);margin-top:4px}
+.progress{height:7px;border-radius:20px;background:var(--panel3);overflow:hidden;margin-top:10px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--purple2),var(--purple));border-radius:20px;transition:width .25s}
+.fill.green{background:linear-gradient(90deg,#36b986,#70e2b4)}
+input,select,textarea{
+ width:100%;min-width:0;background:var(--panel2);border:1px solid var(--border);
+ color:var(--text);border-radius:12px;padding:12px;font-size:12px
+}
+input::placeholder,textarea::placeholder{color:#758095}
+select{appearance:auto}
+.addrow{display:flex;gap:8px;margin-top:12px}
+.addrow input{flex:1}
+.task{display:flex;align-items:center;gap:9px;padding:12px 0;border-bottom:1px solid var(--border)}
+.task:last-child{border:0}
+.task input[type=checkbox]{width:18px;height:18px;accent-color:var(--purple);flex:0 0 auto}
+.taskbody{flex:1;min-width:0}
+.taskname{font-size:12px;overflow-wrap:anywhere}
+.task.done .taskname{text-decoration:line-through;color:var(--muted)}
+.taskmeta{font-size:10px;color:var(--muted);margin-top:4px}
+.priority{font-size:9px;padding:4px 7px;border-radius:20px}
+.High{background:#ff788b1c;color:var(--red)}
+.Medium{background:#f4c7791c;color:var(--yellow)}
+.Low{background:#55d6a11c;color:var(--green)}
+.delete{border:0;background:transparent;color:var(--muted);font-size:17px;padding:5px}
+.badge{font-size:10px;color:var(--green);background:#55d6a118;padding:5px 8px;border-radius:20px}
+.advice{background:linear-gradient(145deg,#8064e923,#55d6a108),var(--panel)}
+.adviceicon{width:32px;height:32px;border-radius:11px;background:#a78bfa22;display:grid;place-items:center;color:var(--purple);font-size:18px}
+.advicetext{font-size:12px;line-height:1.7;color:#d4d8e5}
+.advicetext strong{color:#c9b8ff}
+.advicetext p{margin:0 0 8px}
+.advicetext p:last-child{margin:0}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.full{grid-column:1/-1}
+.balance{font-size:34px;font-weight:850;letter-spacing:-1.3px;margin:10px 0 4px}
+.expense{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0;border-bottom:1px solid var(--border)}
+.expense:last-child{border:0}
+.expensename{font-size:12px;font-weight:700}
+.expensemeta{font-size:10px;color:var(--muted);margin-top:4px}
+.expenseamount{font-size:12px;white-space:nowrap}
+.appchoice{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);font-size:12px}
+.appchoice:last-child{border:0}
+.appchoice input{width:17px;height:17px;accent-color:var(--purple)}
+.appchoice span:nth-child(2){flex:1}
+.notice{padding:13px;border-radius:13px;background:#f4c77910;border:1px solid #f4c77924;color:#e9ce9a;font-size:11px;line-height:1.7}
+.chart{height:145px;display:flex;align-items:end;gap:9px;padding-top:14px}
+.barwrap{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;gap:7px;text-align:center}
+.bar{width:100%;min-height:4px;background:linear-gradient(180deg,#c2a9ff,#7660dd);border-radius:7px 7px 3px 3px}
+.barwrap small{font-size:9px;color:var(--muted)}
+.empty{text-align:center;color:var(--muted);font-size:11px;padding:15px 5px}
+.nav{
+ position:fixed;z-index:10;bottom:0;left:0;right:0;
+ display:flex;justify-content:space-around;
+ background:#10131bf2;border-top:1px solid var(--border);
+ backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+ padding:10px 3px calc(9px + env(safe-area-inset-bottom))
+}
+.nav button{border:0;background:transparent;color:#7c879c;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:700;min-width:48px;padding:3px}
+.nav button.active{color:#c8b6ff}
+.navicon{font-size:19px}
+.toast{
+ position:fixed;z-index:30;bottom:calc(85px + env(safe-area-inset-bottom));left:50%;
+ transform:translate(-50%,12px);opacity:0;pointer-events:none;
+ background:#293141;border:1px solid var(--border);padding:12px 16px;
+ border-radius:13px;font-size:11px;transition:.2s;max-width:90%;text-align:center
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.settingsrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.settingsrow:last-child{border:0}
+.settingsrow label{font-size:12px}
+.settingsrow input{max-width:130px}
+@media(max-width:360px){body{padding-left:11px;padding-right:11px}.nav button{min-width:42px}}
+</style>
+</head>
+
+<body>
+<div class="app">
+<header>
+ <div class="brand">
+  <div class="logo">✳</div>
+  <div><div class="brandname">Life OS</div><div class="brandsub">PERSONAL COMMAND CENTRE</div></div>
+ </div>
+ <div class="date" id="dateLabel"></div>
+</header>
+
+<!-- HOME -->
+<section class="section active" id="home">
+ <div class="heading">
+  <h1 id="greeting">Good morning.</h1>
+  <p id="greetingSub">A new day. A fresh start.</p>
+ </div>
+
+ <div class="card hero">
+  <div class="hero-top"><span class="eyebrow">Deep work session</span><span class="pill" id="timerStatus">● READY</span></div>
+  <div class="timerarea">
+   <div class="timer" id="timer">25:00</div>
+   <div class="timercaption" id="timerCaption">Small steps. Full attention.</div>
+  </div>
+  <div class="actions">
+   <button class="btn primary" id="timerButton" onclick="toggleTimer()">Start focus</button>
+   <button class="btn" onclick="resetTimer()">Reset</button>
+  </div>
+  <div class="eyebrow" style="text-align:center;margin:18px 0 9px">Session duration</div>
+  <div class="actions">
+   <button class="btn small" onclick="setDuration(15)">15 min</button>
+   <button class="btn small" onclick="setDuration(25)">25 min</button>
+   <button class="btn small" onclick="setDuration(45)">45 min</button>
+   <button class="btn small" onclick="setDuration(60)">60 min</button>
+  </div>
+ </div>
+
+ <div class="grid2" style="margin-bottom:13px">
+  <div class="metric"><div class="metricicon">✓</div><div class="metricvalue" id="taskMetric">0/0</div><div class="metriclabel">Tasks completed</div></div>
+  <div class="metric"><div class="metricicon">◷</div><div class="metricvalue" id="focusMetric">0</div><div class="metriclabel">Sessions today</div></div>
+  <div class="metric"><div class="metricicon">₹</div><div class="metricvalue" id="spendMetric">₹0</div><div class="metriclabel">Today's spending</div></div>
+  <div class="metric"><div class="metricicon">✦</div><div class="metricvalue" id="streakMetric">0</div><div class="metriclabel">Active days this week</div></div>
+ </div>
+
+ <div class="card">
+  <div class="cardhead"><div class="cardtitle">Today's priorities</div><span class="badge" id="taskBadge">0 done</span></div>
+  <div id="taskList"></div>
+  <div class="addrow"><input id="taskInput" maxlength="100" placeholder="Add a priority..."><button class="btn primary" onclick="addTask()">Add</button></div>
+ </div>
+
+ <div class="card advice">
+  <div class="cardhead">
+   <div style="display:flex;align-items:center;gap:10px"><div class="adviceicon">✧</div><div><div class="cardtitle">Life OS Coach</div><div class="eyebrow">YOUR DAILY BRIEFING</div></div></div>
+   <span class="badge">SMART</span>
+  </div>
+  <div class="advicetext" id="dailyAdvice"></div>
+ </div>
+</section>
+
+<!-- FOCUS -->
+<section class="section" id="focus">
+ <div class="heading"><h1>Focus Guardian</h1><p>Protect your attention.</p></div>
+ <div class="card">
+  <div class="cardhead"><div class="cardtitle">Distraction watchlist</div><span class="badge">PERSONALISED</span></div>
+  <p class="muted" style="font-size:11px;line-height:1.6">Choose the apps you want to avoid during focus sessions.</p>
+  <div id="appChoices"></div>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Session activity</div>
+  <div class="grid2" style="margin-top:15px">
+   <div><div class="metriclabel">Current status</div><div class="metricvalue" style="font-size:18px" id="focusStatus">Ready</div></div>
+   <div><div class="metriclabel">Interruptions</div><div class="metricvalue" style="font-size:18px" id="interruptions">0</div></div>
+  </div>
+  <div class="progress"><div class="fill" id="focusProgress"></div></div>
+  <p class="muted" id="focusHint" style="font-size:11px;line-height:1.6">Start a focus session to begin tracking.</p>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Enable actual app limits</div>
+  <div class="notice" style="margin-top:12px">
+   A web page cannot block other iPhone apps. For real restrictions:
+   <ol><li>Open iPhone Settings.</li><li>Choose Screen Time.</li><li>Open App Limits.</li><li>Select distracting apps and set limits.</li></ol>
+   You can also configure Downtime. Restrictions depend on your Screen Time settings and permissions.
+  </div>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Get back on track</div>
+  <p class="muted" style="font-size:11px;line-height:1.6">Choose one small next action. You don't need to finish everything at once.</p>
+  <button class="btn primary" onclick="returnToFocus()">Return to my priorities</button>
+ </div>
+</section>
+
+<!-- FINANCE -->
+<section class="section" id="finance">
+ <div class="heading"><h1>Finance</h1><p>Know where your money goes.</p></div>
+ <div class="card">
+  <div class="eyebrow">Monthly balance</div><div class="balance" id="balance">₹0</div>
+  <div class="muted" style="font-size:10px">Income minus recorded monthly expenses</div>
+ </div>
+ <div class="grid2" style="margin-bottom:13px">
+  <div class="metric"><div class="metriclabel">Income</div><div class="metricvalue" style="font-size:21px" id="incomeMetric">₹0</div></div>
+  <div class="metric"><div class="metriclabel">Expenses</div><div class="metricvalue" style="font-size:21px" id="expenseTotal">₹0</div></div>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Monthly income</div>
+  <p class="muted" style="font-size:10px">Enter your own amount. It starts at zero.</p>
+  <div class="addrow"><input id="incomeInput" type="number" min="0" step=".01" placeholder="Monthly income ₹"><button class="btn primary" onclick="saveIncome()">Save</button></div>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Add expense</div>
+  <div class="formgrid" style="margin-top:13px">
+   <input class="full" id="expenseName" maxlength="70" placeholder="What did you spend on?">
+   <input id="expenseAmount" type="number" min=".01" step=".01" placeholder="Amount ₹">
+   <select id="expenseCategory"><option>Food</option><option>Transport</option><option>Shopping</option><option>Education</option><option>Entertainment</option><option>Other</option></select>
+   <input class="full" id="expenseDate" type="date">
+   <button class="btn primary full" onclick="addExpense()">Save expense</button>
+  </div>
+ </div>
+ <div class="card">
+  <div class="cardhead"><div class="cardtitle">Transactions</div><span class="eyebrow" id="expenseCount">0 ITEMS</span></div>
+  <div id="expenseList"></div>
+ </div>
+</section>
+
+<!-- MOVEMENT -->
+<section class="section" id="movement">
+ <div class="heading"><h1>Movement</h1><p>Build healthy, sustainable habits.</p></div>
+ <div class="card">
+  <div class="cardhead"><div class="cardtitle">Today's activities</div><span class="badge" id="workoutBadge">0/4</span></div>
+  <div id="workoutList"></div>
+  <div class="progress"><div class="fill green" id="workoutProgress"></div></div>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Session notes</div>
+  <textarea id="workoutNotes" rows="4" maxlength="1000" placeholder="How did your day go?"></textarea>
+  <button class="btn primary" style="margin-top:10px" onclick="saveNotes()">Save notes</button>
+ </div>
+</section>
+
+<!-- INSIGHTS -->
+<section class="section" id="insights">
+ <div class="heading"><h1>Insights</h1><p>Progress over perfection.</p></div>
+ <div class="card">
+  <div class="cardhead"><div class="cardtitle">Focus history</div><span class="eyebrow">LAST 7 DAYS</span></div>
+  <div class="chart" id="chart"></div>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Your progress</div>
+  <div style="margin-top:18px">
+   <div class="cardhead"><span class="muted" style="font-size:11px">Task completion</span><strong id="taskPercent">0%</strong></div>
+   <div class="progress"><div class="fill" id="taskProgress"></div></div>
+  </div>
+  <div style="margin-top:19px">
+   <div class="cardhead"><span class="muted" style="font-size:11px">Activity completion</span><strong id="workoutPercent">0%</strong></div>
+   <div class="progress"><div class="fill green" id="workoutAnalyticsProgress"></div></div>
+  </div>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Data & backup</div>
+  <p class="muted" style="font-size:11px;line-height:1.6">Your data is stored in this browser. Export a backup before changing devices or clearing website data.</p>
+  <div class="actions" style="justify-content:flex-start">
+   <button class="btn primary" onclick="exportData()">Export backup</button>
+   <button class="btn" onclick="document.getElementById('importFile').click()">Import backup</button>
+   <input id="importFile" type="file" accept=".json,application/json" hidden onchange="importData(event)">
+  </div>
+ </div>
+ <div class="card">
+  <div class="cardtitle">Reset options</div>
+  <p class="muted" style="font-size:11px;line-height:1.6">Resetting removes stored app data. Export a backup first if you want to keep it.</p>
+  <button class="btn danger" onclick="resetAll()">Reset all app data</button>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="section" id="settings">
+ <div class="heading"><h1>Settings</h1><p>Make Life OS yours.</p></div>
+ <div class="card">
+  <div class="cardtitle">Personal preferences</div>
+  <div class="settingsrow"><label for="userName">Your display name</label><input id="userName" maxlength="30" placeholder="Your name"></div>
+  <div class="settingsrow"><label for="dailyGoal">Daily focus goal</label><input id="dailyGoal" type="number" min="1" max="20"></div>
+  <div class="settingsrow"><label for="breakDuration">Break duration (minutes)</label><input id="breakDuration" type="number" min="1" max="30"></div>
+  <button class="btn primary" style="margin-top:14px" onclick="saveSettings()">Save preferences</button>
+ </div>
+ <div class="card">
+  <div class="cardtitle">About this app</div>
+  <p class="muted" style="font-size:11px;line-height:1.7">Life OS 2.0 is a browser-based productivity dashboard. It works offline after loading, saves data locally and does not connect to a real AI service. Your information is not synced to another device automatically.</p>
+ </div>
+</section>
+
+<nav class="nav">
+ <button class="active" data-tab="home" onclick="showTab('home',this)"><span class="navicon">⌂</span>Home</button>
+ <button data-tab="focus" onclick="showTab('focus',this)"><span class="navicon">◉</span>Focus</button>
+ <button data-tab="finance" onclick="showTab('finance',this)"><span class="navicon">₹</span>Money</button>
+ <button data-tab="movement" onclick="showTab('movement',this)"><span class="navicon">✧</span>Move</button>
+ <button data-tab="insights" onclick="showTab('insights',this)"><span class="navicon">▥</span>Stats</button>
+ <button data-tab="settings" onclick="showTab('settings',this)"><span class="navicon">⚙</span>More</button>
+</nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+const KEY="lifeOS_ultimate_v2";
+const FOCUS_DEFAULT=25*60;
+const APPS=["Instagram","YouTube","TikTok","Games","Social media","Streaming"];
+const ACTIVITIES=["Walk or outdoor time","Mobility or stretching","Sport or enjoyable movement","Recovery and rest"];
+
+const today=()=>new Date().toLocaleDateString("en-CA");
+const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+const safeNumber=(v,min=0,max=100000000)=>Math.min(max,Math.max(min,Number(v)||0));
+const makeId=()=>Math.random().toString(36).slice(2,11);
+const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function defaultData(){
+ return {
+  version:2,
+  profile:{name:"",goal:4,breakDuration:5},
+  income:0,
+  tasks:[],
+  expenses:[],
+  workout:{},
+  notes:{},
+  selectedApps:["Instagram","YouTube","TikTok","Games"],
+  history:{},
+  timer:{duration:FOCUS_DEFAULT,remaining:FOCUS_DEFAULT,endAt:null,running:false,mode:"focus"},
+  interruptions:0,
+  lastInterruption:null
+ };
+}
+
+function loadData(){
+ try{
+  const raw=localStorage.getItem(KEY);
+  if(!raw)return defaultData();
+  const parsed=JSON.parse(raw);
+  const base=defaultData();
+  const data={...base,...parsed};
+  data.profile={...base.profile,...(parsed.profile||{})};
+  data.timer={...base.timer,...(parsed.timer||{})};
+  if(!Array.isArray(data.tasks))data.tasks=[];
+  if(!Array.isArray(data.expenses))data.expenses=[];
+  if(!Array.isArray(data.selectedApps))data.selectedApps=base.selectedApps;
+  if(!data.history||typeof data.history!=="object")data.history={};
+  if(!data.workout||typeof data.workout!=="object")data.workout={};
+  if(!data.notes||typeof data.notes!=="object")data.notes={};
+  return data;
+ }catch(e){return defaultData()}
+}
+
+let data=loadData();
+let hiddenAt=null;
+let toastTimer=null;
+let tickHandle=null;
+
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(data))}
+ catch(e){notify("Could not save. Your browser storage may be full.")}
+}
+function notify(message){
+ const el=document.getElementById("toast");
+ el.textContent=message;el.classList.add("show");
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>el.classList.remove("show"),2300);
+}
+function dateLabel(){
+ const d=new Date();
+ document.getElementById("dateLabel").innerHTML=
+ d.toLocaleDateString(undefined,{weekday:"short"})+"<br>"+d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+ const h=d.getHours();
+ const name=data.profile.name.trim();
+ document.getElementById("greeting").textContent=
+ (h<12?"Good morning":h<17?"Good afternoon":"Good evening")+(name?", "+name+".":".");
+}
+function showTab(id,button){
+ document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+ if(button)button.classList.add("active");
+ else document.querySelector('.nav button[data-tab="'+id+'"]')?.classList.add("active");
+ if(id==="home")renderHome();
+ if(id==="finance")renderFinance();
+ if(id==="insights")renderInsights();
+ if(id==="focus")renderFocus();
+ if(id==="movement")renderWorkout();
+}
+function historyToday(){
+ const k=today();
+ if(!data.history[k])data.history[k]={sessions:0,interruptions:0};
+ return data.history[k];
+}
+function completedTasks(){
+ return data.tasks.filter(t=>t.done).length;
+}
+function taskProgress(){
+ return data.tasks.length?Math.round(completedTasks()/data.tasks.length*100):0;
+}
+function workoutDone(){
+ const w=data.workout[today()]||[];
+ return w.filter(Boolean).length;
+}
+function renderTasks(){
+ const el=document.getElementById("taskList");
+ if(!data.tasks.length){el.innerHTML='<div class="empty">No priorities yet. Add your first task.</div>';return}
+ el.innerHTML=data.tasks.map(t=>`
+ <div class="task ${t.done?"done":""}">
+  <input type="checkbox" ${t.done?"checked":""} onchange="toggleTask('${t.id}')">
+  <div class="taskbody">
+   <div class="taskname">${escapeHTML(t.name)}</div>
+   <div class="taskmeta">${t.due?escapeHTML(t.due):"No deadline"} · <span class="priority ${t.priority}">${t.priority}</span></div>
+  </div>
+  <button class="delete" aria-label="Delete task" onclick="deleteTask('${t.id}')">×</button>
+ </div>`).join("");
+}
+function addTask(){
+ const input=document.getElementById("taskInput");
+ const name=input.value.trim();
+ if(!name){notify("Enter a task first.");return}
+ data.tasks.push({id:makeId(),name,done:false,priority:"Medium",due:""});
+ input.value="";save();renderHome();notify("Priority added.");
+}
+function toggleTask(id){
+ const t=data.tasks.find(x=>x.id===id);if(!t)return;
+ t.done=!t.done;save();renderHome();
+}
+function deleteTask(id){
+ data.tasks=data.tasks.filter(t=>t.id!==id);save();renderHome();notify("Task deleted.");
+}
+function coachAdvice(){
+ const pending=data.tasks.filter(t=>!t.done);
+ const done=completedTasks();
+ const sessions=historyToday().sessions;
+ const spending=data.expenses.filter(e=>e.date===today()).reduce((a,e)=>a+e.amount,0);
+ const messages=[];
+ if(!data.tasks.length)messages.push("Start by adding <strong>one clear priority</strong> for today.");
+ else if(!pending.length)messages.push("All your listed tasks are complete. Great progress. Take a moment to review what went well.");
+ else messages.push("You have <strong>"+pending.length+" task"+(pending.length===1?"":"s")+"</strong> left. Start with: <strong>"+escapeHTML(pending[0].name)+"</strong>.");
+ if(sessions===0)messages.push("Try one focused session to build momentum.");
+ else messages.push("You've completed <strong>"+sessions+" focus session"+(sessions===1?"":"s")+"</strong> today. Keep your breaks intentional.");
+ if(spending>0)messages.push("Today's recorded spending: <strong>"+money(spending)+"</strong>. Keep an eye on your budget.");
+ if(done>0)messages.push("You've already completed <strong>"+done+" task"+(done===1?"":"s")+"</strong>. Consistency beats perfection.");
+ return messages.map(m=>"<p>"+m+"</p>").join("");
+}
+function renderHome(){
+ dateLabel();
+ renderTasks();
+ const sessions=historyToday().sessions;
+ document.getElementById("taskMetric").textContent=completedTasks()+"/"+data.tasks.length;
+ document.getElementById("focusMetric").textContent=sessions;
+ document.getElementById("taskBadge").textContent=completedTasks()+" done";
+ document.getElementById("spendMetric").textContent=money(data.expenses.filter(e=>e.date===today()).reduce((a,e)=>a+e.amount,0));
+ document.getElementById("streakMetric").textContent=activeDaysThisWeek();
+ document.getElementById("dailyAdvice").innerHTML=coachAdvice();
+ renderTimer();
+}
+function activeDaysThisWeek(){
+ let count=0;
+ for(let i=0;i<7;i++){
+  const d=new Date();d.setDate(d.getDate()-i);
+  const k=d.toLocaleDateString("en-CA");
+  if((data.history[k]?.sessions||0)>0)count++;
+ }
+ return count;
+}
+
+/* TIMER */
+function timerRemaining(){
+ if(data.timer.running&&data.timer.endAt){
+  return Math.max(0,Math.ceil((data.timer.endAt-Date.now())/1000));
+ }
+ return Math.max(0,data.timer.remaining);
+}
+function renderTimer(){
+ const t=data.timer;
+ const remaining=timerRemaining();
+ const min=String(Math.floor(remaining/60)).padStart(2,"0");
+ const sec=String(remaining%60).padStart(2,"0");
+ document.getElementById("timer").textContent=min+":"+sec;
+ document.getElementById("timerButton").textContent=t.running?"Pause":remaining===0?"Start again": "Start focus";
+ document.getElementById("timerStatus").textContent=t.running?"● FOCUSING":t.mode==="break"?"● BREAK":"● READY";
+ document.getElementById("timerCaption").textContent=t.mode==="break"?"Take a proper breather.":t.running?"Stay with the task in front of you.":"Small steps. Full attention.";
+ document.getElementById("focusStatus").textContent=t.running?"Active":t.mode==="break"?"Break":"Ready";
+ document.getElementById("interruptions").textContent=historyToday().interruptions;
+ const pct=t.duration?Math.min(100,Math.max(0,(1-remaining/t.duration)*100)):0;
+ document.getElementById("focusProgress").style.width=pct+"%";
+ document.getElementById("focusHint").textContent=t.running?"Your session is running. Leaving this page may be recorded as an interruption.":"Start a session when you're ready.";
+}
+function setDuration(minutes){
+ if(data.timer.running){notify("Pause the timer before changing duration.");return}
+ data.timer.mode="focus";data.timer.duration=minutes*60;data.timer.remaining=minutes*60;data.timer.endAt=null;
+ save();renderTimer();notify(minutes+" minute session selected.");
+}
+function toggleTimer(){
+ const t=data.timer;
+ if(t.running){
+  t.remaining=timerRemaining();t.running=false;t.endAt=null;
+  save();renderTimer();return;
+ }
+ if(t.remaining<=0){
+  t.mode="focus";t.duration=FOCUS_DEFAULT;t.remaining=FOCUS_DEFAULT;
+ }
+ t.running=true;t.endAt=Date.now()+t.remaining*1000;
+ save();renderTimer();
+}
+function resetTimer(){
+ data.timer.running=false;data.timer.endAt=null;
+ data.timer.mode="focus";data.timer.duration=FOCUS_DEFAULT;data.timer.remaining=FOCUS_DEFAULT;
+ save();renderTimer();
+}
+function timerTick(){
+ if(!data.timer.running)return;
+ const remaining=timerRemaining();
+ if(remaining<=0){
+  const mode=data.timer.mode;
+  data.timer.running=false;data.timer.endAt=null;
+  if(mode==="focus"){
+   const h=historyToday();h.sessions++;
+   data.timer.mode="break";
+   data.timer.duration=safeNumber(data.profile.breakDuration,1,30)*60;
+   data.timer.remaining=data.timer.duration;
+   notify("Focus session complete. Take a break!");
+  }else{
+   data.timer.mode="focus";data.timer.duration=FOCUS_DEFAULT;data.timer.remaining=FOCUS_DEFAULT;
+   notify("Break finished. Ready for another session?");
+  }
+  save();renderHome();renderFocus();return;
+ }
+ renderTimer();
+}
+tickHandle=setInterval(timerTick,500);
+
+/* FOCUS GUARDIAN */
+function renderFocus(){
+ document.getElementById("appChoices").innerHTML=APPS.map(app=>`
+ <label class="appchoice">
+ <input type="checkbox" ${data.selectedApps.includes(app)?"checked":""} onchange="toggleApp('${app}')">
+ <span>${escapeHTML(app)}</span><span class="muted">Avoid</span>
+ </label>`).join("");
+ renderTimer();
+}
+function toggleApp(app){
+ if(data.selectedApps.includes(app))data.selectedApps=data.selectedApps.filter(x=>x!==app);
+ else data.selectedApps.push(app);
+ save();
+}
+function returnToFocus(){
+ showTab("home");notify("One task. One step. Let's go.");
+}
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden){
+  hiddenAt=Date.now();
+ }else if(hiddenAt){
+  const away=Date.now()-hiddenAt;
+  if(away>5000&&data.timer.running){
+   const h=historyToday();h.interruptions++;
+   save();renderTimer();
+   notify("Welcome back. Refocus on your task.");
+  }
+  hiddenAt=null;
+ }
+});
+
+/* FINANCE */
+function renderFinance(){
+ document.getElementById("incomeInput").value=data.income||"";
+ const month=today().slice(0,7);
+ const expenses=data.expenses.filter(e=>e.date.startsWith(month));
+ const total=expenses.reduce((a,e)=>a+e.amount,0);
+ document.getElementById("balance").textContent=money(data.income-total);
+ document.getElementById("incomeMetric").textContent=money(data.income);
+ document.getElementById("expenseTotal").textContent=money(total);
+ document.getElementById("expenseCount").textContent=expenses.length+" ITEMS";
+ const list=document.getElementById("expenseList");
+ if(!expenses.length){list.innerHTML='<div class="empty">No expenses recorded this month.</div>';return}
+ list.innerHTML=expenses.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(e=>`
+ <div class="expense">
+  <div><div class="expensename">${escapeHTML(e.name)}</div><div class="expensemeta">${escapeHTML(e.category)} · ${escapeHTML(e.date)}</div></div>
+  <div class="expenseamount">${money(e.amount)} <button class="delete" aria-label="Delete expense" onclick="deleteExpense('${e.id}')">×</button></div>
+ </div>`).join("");
+}
+function saveIncome(){
+ const v=document.getElementById("incomeInput").value;
+ if(v.trim()===""||!Number.isFinite(Number(v))||Number(v)<0){notify("Enter a valid income amount.");return}
+ data.income=Number(v);save();renderFinance();renderHome();notify("Income updated.");
+}
+function addExpense(){
+ const name=document.getElementById("expenseName").value.trim();
+ const amount=Number(document.getElementById("expenseAmount").value);
+ const category=document.getElementById("expenseCategory").value;
+ const date=document.getElementById("expenseDate").value;
+ if(!name||!Number.isFinite(amount)||amount<=0||!date){notify("Enter a name, valid amount and date.");return}
+ data.expenses.push({id:makeId(),name,amount,category,date});
+ document.getElementById("expenseName").value="";
+ document.getElementById("expenseAmount").value="";
+ save();renderFinance();renderHome();notify("Expense saved.");
+}
+function deleteExpense(id){
+ data.expenses=data.expenses.filter(e=>e.id!==id);save();renderFinance();renderHome();notify("Expense deleted.");
+}
+
+/* MOVEMENT */
+function renderWorkout(){
+ const checked=data.workout[today()]||[];
+ document.getElementById("workoutList").innerHTML=ACTIVITIES.map((a,i)=>`
+ <label class="task ${checked[i]?"done":""}">
+  <input type="checkbox" ${checked[i]?"checked":""} onchange="toggleActivity(${i})">
+  <span class="taskname">${escapeHTML(a)}</span>
+ </label>`).join("");
+ const n=checked.filter(Boolean).length;
+ document.getElementById("workoutBadge").textContent=n+"/"+ACTIVITIES.length;
+ document.getElementById("workoutProgress").style.width=(n/ACTIVITIES.length*100)+"%";
+ document.getElementById("workoutNotes").value=data.notes[today()]||"";
+}
+function toggleActivity(i){
+ const a=data.workout[today()]||[false,false,false,false];
+ a[i]=!a[i];data.workout[today()]=a;save();renderWorkout();renderInsights();
+}
+function saveNotes(){
+ data.notes[today()]=document.getElementById("workoutNotes").value;
+ save();notify("Notes saved.");
+}
+
+/* INSIGHTS */
+function renderInsights(){
+ const days=[];
+ for(let i=6;i>=0;i--){
+  const d=new Date();d.setDate(d.getDate()-i);
+  const key=d.toLocaleDateString("en-CA");
+  days.push({key,label:d.toLocaleDateString(undefined,{weekday:"short"}),value:data.history[key]?.sessions||0});
+ }
+ const max=Math.max(1,...days.map(d=>d.value));
+ document.getElementById("chart").innerHTML=days.map(d=>`
+ <div class="barwrap"><div class="bar" style="height:${Math.max(4,d.value/max*100)}%" title="${d.value} sessions"></div><small>${d.label}</small></div>`).join("");
+ const tp=taskProgress(),wp=Math.round(workoutDone()/ACTIVITIES.length*100);
+ document.getElementById("taskPercent").textContent=tp+"%";
+ document.getElementById("taskProgress").style.width=tp+"%";
+ document.getElementById("workoutPercent").textContent=wp+"%";
+ document.getElementById("workoutAnalyticsProgress").style.width=wp+"%";
+}
+
+/* SETTINGS */
+function saveSettings(){
+ const name=document.getElementById("userName").value.trim();
+ const goal=Number(document.getElementById("dailyGoal").value);
+ const br=Number(document.getElementById("breakDuration").value);
+ if(!Number.isInteger(goal)||goal<1||goal>20||!Number.isInteger(br)||br<1||br>30){notify("Check your goal and break duration.");return}
+ data.profile={name,goal,breakDuration:br};
+ save();dateLabel();renderHome();notify("Preferences saved.");
+}
+function loadSettings(){
+ document.getElementById("userName").value=data.profile.name||"";
+ document.getElementById("dailyGoal").value=data.profile.goal||4;
+ document.getElementById("breakDuration").value=data.profile.breakDuration||5;
+}
+
+/* BACKUP */
+function exportData(){
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download="life-os-backup-"+today()+".json";
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ notify("Backup exported.");
+}
+function importData(event){
+ const file=event.target.files?.[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const parsed=JSON.parse(reader.result);
+   if(!parsed||typeof parsed!=="object"||!Array.isArray(parsed.tasks)||!Array.isArray(parsed.expenses)||!parsed.profile||!parsed.timer)throw new Error("Invalid backup");
+   if(!confirm("Replace your current Life OS data with this backup?"))return;
+   localStorage.setItem(KEY,JSON.stringify(parsed));data=loadData();
+   loadSettings();renderAll();notify("Backup restored.");
+  }catch(e){notify("That backup file is not valid.")}
+  event.target.value="";
+ };
+ reader.readAsText(file);
+}
+function resetAll(){
+ if(!confirm("This will permanently erase your Life OS data in this browser. Continue?"))return;
+ data=defaultData();save();loadSettings();renderAll();notify("Life OS has been reset.");
+}
+function renderAll(){
+ dateLabel();renderHome();renderTimer();renderFocus();renderFinance();renderWorkout();renderInsights();loadSettings();
+}
+
+/* STARTUP */
+document.getElementById("expenseDate").value=today();
+document.getElementById("taskInput").addEventListener("keydown",e=>{if(e.key==="Enter")addTask()});
+if(data.timer.running){
+ const r=timerRemaining();
+ if(r<=0){
+  data.timer.running=false;data.timer.endAt=null;data.timer.remaining=0;
+ }else{
+  data.timer.remaining=r;
+ }
+}
+renderAll();save();
+</script>
+</body>
+</html>
